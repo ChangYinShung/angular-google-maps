@@ -6,18 +6,18 @@
 
 (function () {
     'use strict';
-    angular.module('uiGmapgoogle-maps').component('googleMap', googleMap());
+    var app = angular.module('uiGmapgoogle-maps');
+    app.component('googleMap', googleMap());
 
     function googleMap() {
         return {
-            template: '<section ng-if="Ctrl.Open"><ui-gmap-google-map modelsbyref="false" dorebuildall="true" refresh="true"  center="Ctrl.Center" zoom="Ctrl.zoom" data-tap-disabled="true"> ' +
-                           '<ui-gmap-search-box template="Ctrl.SearchBox.template" events="Ctrl.SearchBox.events"></ui-gmap-search-box>' +
-                           '<ui-gmap-marker coords="Ctrl.Marker" options="{draggable:true}" idkey="1">' +
-                           '</ui-gmap-marker>' +
-                           '</ui-gmap-google-map></section>',
+            templateUrl: 'SearchBox.tpl',
             controller: googleMapController,
             controllerAs: 'Ctrl',
             bindings: {
+                searchParentDiv: '@?',
+                draggable: '=?',
+                type: '@',
                 ngModel: '=',
                 zoom: '=?',
                 MarkerDraggable: '@'
@@ -26,19 +26,16 @@
     }
     googleMapController.$inject = ['$timeout', '$log', '$scope', 'uiGmapIsReady'];
     function googleMapController($timeout, $log, $scope, uiGmapIsReady) {
-
-
-
         var vm = this;
+
         vm.Center = {};
         vm.Marker = {};
-
+        vm.MarkerOption = {
+            draggable: vm.draggable
+        }
         SetDefaultValue(vm.Center, vm.ngModel); //預設地圖中心
         SetDefaultValue(vm.Marker, vm.ngModel); //預設Marker 中心
-
-
         vm.zoom = vm.zoom || 13;
-
         vm.SearchBox = {
             template: 'SearchBox',
             events: {
@@ -67,8 +64,6 @@
                 vm.Open = true;
                 AvoidGoogleMapRenderParticalMap();
             });
-
-
         }
         //Private
 
@@ -96,9 +91,23 @@
 
     }
 
-    angular.module('YC.Plugin.GoogleMap').run(function ($templateCache) {
+    app.run(function ($templateCache) {
         $templateCache.put('SearchBox', '<input type="text" placeholder="請輸入地標" style="margin-top:10px" placeholder="Search">');
+        $templateCache.put('Org', '<section ng-if="Ctrl.Open"><ui-gmap-google-map center="Ctrl.Center" zoom="Ctrl.zoom" data-tap-disabled="true"> ' +
+                           '<ui-gmap-search-box template="Ctrl.SearchBox.template" events="Ctrl.SearchBox.events"></ui-gmap-search-box>' +
+                           '<ui-gmap-marker coords="Ctrl.Marker" options="{draggable:true}" idkey="1">' +
+                           '</ui-gmap-marker>' +
+                           '</ui-gmap-google-map></section>');
 
+        $templateCache.put('MarkerOnly.tpl', '<section ng-if="Ctrl.Open"><ui-gmap-google-map center="Ctrl.Center" zoom="Ctrl.zoom" data-tap-disabled="true"> ' +
+                           '<ui-gmap-marker coords="Ctrl.Marker" options="Ctrl.MarkerOption" idkey="1">' +
+                           '</ui-gmap-marker>' +
+                           '</ui-gmap-google-map></section>');
+        $templateCache.put('SearchBox.tpl', '<section ng-if="Ctrl.Open"><ui-gmap-google-map center="Ctrl.Center" zoom="Ctrl.zoom" data-tap-disabled="true"> ' +
+            '<ui-gmap-search-box parentdiv="Ctrl.searchParentDiv" template="Ctrl.SearchBox.template" events="Ctrl.SearchBox.events" options="Ctrl.SearchBox.options"></ui-gmap-search-box>' +
+                   '<ui-gmap-marker coords="Ctrl.Marker" options="Ctrl.MarkerOption" idkey="1">' +
+                   '</ui-gmap-marker>' +
+                   '</ui-gmap-google-map></section>');
     });
 
 })();

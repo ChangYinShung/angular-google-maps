@@ -13,7 +13,7 @@
     angularGoogleMaps.$inject = ['uiGmapGoogleMapApiProvider'];
     function angularGoogleMaps(uiGmapGoogleMapApiProvider) {
         uiGmapGoogleMapApiProvider.configure({
-            key: 'APIKey',
+            key: 'AIzaSyChOr9qCcGlBjJwOKIQF9DimZE3dPqM0h8', //Google API KEY
             //v: '3', //defaults to latest 3.X anyhow
             libraries: 'places',
             language:'zh-tw'
